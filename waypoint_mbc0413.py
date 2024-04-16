@@ -34,7 +34,7 @@ class move_limo:
         rospy.Timer(rospy.Duration(0.1), self.drive_control)
 
 
-        file_path = '/home/wooyeong/csv_folder/waypoint_list/test.csv'
+        file_path = '/home/wooyeong/csv_folder/waypoint_list/way_dir_h.csv'
         reading_csv = pd.read_csv(file_path)
         self.lx = reading_csv.iloc[:, 0].tolist() #first row
         self.ly = reading_csv.iloc[:, 1].tolist() #second row
@@ -99,33 +99,34 @@ class move_limo:
             elif cte > 180:
                 cte = cte - 360
 
-            Kp = 0.1 # 게인값 조정필요
+            Kp = 0.028 # 게인값 조정필요
 
 
 ###############################################################################
 
-            ###경로의 왼쪽인지 오른쪽인지 판별파트 (min_dist)###
-            # angle = (math.atan2(self.ly[target_i] - self.utm_y,self.lx[target_i] - self.utm_x))*180/math.pi
+            ##경로의 왼쪽인지 오른쪽인지 판별파트 (min_dist)###
+            angle = (math.atan2(self.ly[target_i] - self.utm_y,self.lx[target_i] - self.utm_x))*180/math.pi
 
-            # if angle < 0:
-            #     angle = angle + 360
+            if angle < 0:
+                angle = angle + 360
 
-            # if min_dist > 0.05:
-            #     if map_yaw - angle > 0:
-            #         min_dist = -min_dist
-            #     else:
-            #         min_dist = min_dist
-            # else:
-            #     min_dist = 0
-            dir = 0
-            if min_dist > 0.5:
-                dir = np.dot([self.lx[target_i+1]-self.lx[target_i],self.ly[target_i+1]-self.ly[target_i]],[self.utm_y-self.ly[target_i],(self.utm_x-self.lx[target_i])])
-
-            if dir > 0:
-                min_dist = -min_dist
-            
+            if min_dist > 0.01:
+                if map_yaw - angle > 0:
+                    min_dist = -min_dist
+                else:
+                    min_dist = min_dist
             else:
                 min_dist = 0
+            # dir = 0
+            # if min_dist > 0.01:
+            #     dir = np.dot([self.lx[target_i+1]-self.lx[target_i],self.ly[target_i+1]-self.ly[target_i]],[self.utm_y-self.ly[target_i],(self.utm_x-self.lx[target_i])])
+            # else:
+            #     min_dist = 0
+                
+            # if dir < 0:
+            #     min_dist = -min_dist
+            
+
 
             #최종 스탠리 앵글
             stanley_steer_angle = cte + math.atan2(Kp * min_dist, 0.1) * 180 / math.pi
