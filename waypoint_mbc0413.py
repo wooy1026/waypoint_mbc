@@ -9,8 +9,6 @@ from geometry_msgs.msg import Twist
 from sensor_msgs.msg import Joy
 import pandas as pd
 
-
-
 class move_limo:
     def __init__(self):
         rospy.init_node('control', anonymous=True)
