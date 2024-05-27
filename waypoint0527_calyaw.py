@@ -28,7 +28,7 @@ class move_limo:
         self.prev_y = None
 
         #토픽 구독
-        rospy.Subscriber("/heading_topic", Float64, self.heading_callback)
+        # rospy.Subscriber("/heading_topic", Float64, self.heading_callback)
         rospy.Subscriber("/utm_x_topic", Float64, self.utm_x_callback)
         rospy.Subscriber("/utm_y_topic", Float64, self.utm_y_callback)
         rospy.Subscriber("/joy", Joy, self.send_joy)
