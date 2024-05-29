@@ -28,6 +28,7 @@ class move_limo:
         self.lx = []  # 또는 기본 웨이포인트 값으로 초기화
         self.ly = []  # 또는 기본 웨이포인트 값으로 초기화
         self.return_flag = False
+        self.start = []
 
         #토픽 구독
         rospy.Subscriber("/heading_topic", Float64, self.heading_callback)
@@ -40,10 +41,10 @@ class move_limo:
 
         rospy.Timer(rospy.Duration(0.1), self.drive_control)
 
-        self.boundery_points  = [(  ),(  ),(  ),(  ),(  )] #geofence point / 사각형, 처음과 끝이 같은 루프포인트
+        self.boundery_points  = [(508801.121907, 3888884.02),(508814.23, 3888883.09),(508815.24, 3888904.29),(508802.92, 3888906.05),(508801.121907, 3888884.02)] #geofence point / a동 앞
         
     def waypoint_csv(self):
-        file_path = '/home/lsy/csv_files/jot.csv' #주행 경로 csv파일 주소
+        file_path = '/home/lsy/csv_files/0529_round_r.csv' #주행 경로 csv파일 주소
         reading_csv = pd.read_csv(file_path)
         way_lx = reading_csv.iloc[:, 0].tolist() #첫번째 열 가져와서 변수리스트 저장
         way_ly = reading_csv.iloc[:, 1].tolist() #두번째 열 가져와서 변수리스트 저장
@@ -77,12 +78,12 @@ class move_limo:
         return inside_flag
     
     def return_path (self):
+        
         if self.return_flag == False:
-            start = [self.utm_x,self.utm_y]
+            self.start = [self.utm_x,self.utm_y]
             self.return_flag = True
 
-        boundery_points = self.boundery_points
-
+        boundery_points = [(508801.121907, 3888884.02),(508814.23, 3888883.09),(508815.24, 3888904.29),(508802.92, 3888906.05)]
         if len(boundery_points) != 4:
             print("4개의 점이 필요합니다.")
         x_center_cal_list = [p[0] for p in boundery_points]
@@ -92,8 +93,8 @@ class move_limo:
         center_y = sum(y_center_cal_list) / 4.0 #중심점_y
         center = [center_x , center_y]
 
-        return_lx = np.linspace(start[0], center[0], 100)
-        return_ly = np.linspace(start[1], center[1], 100)
+        return_lx = np.linspace(self.start[0], center[0], 100)
+        return_ly = np.linspace(self.start[1], center[1], 100)
 
         return return_lx, return_ly
 
@@ -180,6 +181,7 @@ class move_limo:
                 self.lx , self.ly = self.waypoint_csv()
                 stanley_steer_angle = self.stanley_control_angle()
                 if stanley_steer_angle is None: # 큰경우 정지
+                    print("AAAAAAAAA")
                     drive.linear.x = 0
                     drive.angular.z = 0
                 else:
@@ -189,6 +191,8 @@ class move_limo:
             else:
                 self.lx , self.ly = self.return_path()
                 stanley_steer_angle = self.stanley_control_angle()
+                drive.linear.x = 0.7
+                drive.angular.z = stanley_steer_angle
                 print("상태: 범위 밖")
 
         else:
