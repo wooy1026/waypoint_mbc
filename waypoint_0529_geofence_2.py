@@ -77,10 +77,11 @@ class move_limo:
         return inside_flag
     
     def return_path (self):
-        boundery_points = self.boundery_points
-        
         if self.return_flag == False:
             start = [self.utm_x,self.utm_y]
+            self.return_flag = True
+
+        boundery_points = self.boundery_points
 
         if len(boundery_points) != 4:
             print("4개의 점이 필요합니다.")
@@ -175,7 +176,7 @@ class move_limo:
 
         elif self.auto == 1:
             if inside:
-                self.return_flag == True
+                self.return_flag = False
                 self.lx , self.ly = self.waypoint_csv()
                 stanley_steer_angle = self.stanley_control_angle()
                 if stanley_steer_angle is None: # 큰경우 정지
