@@ -89,7 +89,7 @@ class move_limo:
         API = Message(service_key = "d3478140dfe991d07a51a6f6b53e54b0") # API키 (우영)
         url = "https://kapi.kakao.com/v2/api/talk/memo/default/send"
 
-        token = "G7BEzKO85XyGi9F5U0uvSUOEJqB-zA-JAAAAAQo9dNsAAAGPzSfLLZgXPJRhmZ-F" # 변경된 토큰 대입
+        token = "kXF8Gw0jmbOUx_yPC2PPrZfFw5x42GTXAAAAAQo9c-sAAAGQAedkQ5gXPJRhmZ-F" # 변경된 토큰 대입
 
         headers = {"Authorization": "Bearer " + token}
 
